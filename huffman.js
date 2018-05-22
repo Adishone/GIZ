@@ -35,9 +35,10 @@ function generateTreeData(sortedArray)
 			return a[1] - b[1];
 			});			
 		}
-	jsonTreeData(sortedArray, tempData);
+	var array = jsonTreeData(sortedArray, tempData);
 	tempData[sortedArray[0][0]] = createNewNode(sortedArray[0], null);
-	generatePruferSequence(tempData, tempData[sortedArray[0][0]].name);
+	
+	generatePruferSequence(tempData, tempData[sortedArray[0][0]].name, array);
 }
 
 function jsonTreeData(root, nodeData)
@@ -56,6 +57,7 @@ function jsonTreeData(root, nodeData)
 	
 	var treeDepth = countTreeDepth(jsonTreeData[0]);
 	drawTree(jsonTreeData, treeDepth, "#treehuffman");
+	return nodeData;
 }
 
 function addChild(child, nodeData)
@@ -68,6 +70,7 @@ function addChild(child, nodeData)
 	childNode.parent = child.parent;
 	childNode.value = child.value;
 	childNode.uniqueId = uniqueId;
+	child.uniqueId = uniqueId;
 	if (child.children)
 	{
 		childNode.children = [];
@@ -107,7 +110,7 @@ function createNewNode(sortedNode, parent)
 	return newNode;
 }
 
-function generatePruferSequence(treeData, rootName)
+function generatePruferSequence(treeData, rootName, arrayTreeData)
 {
 	var pruferSequence = "";
 	var charSequence = "";
@@ -118,13 +121,20 @@ function generatePruferSequence(treeData, rootName)
 	_.forEach(leaves, function(leaf) {
 		charSequence += leaf.name + " ";
 	});
+	arrayTreeData[rootName].uniqueId = 1;
 
-	while (Object.keys(treeData).length > 2)
+	while (Object.keys(treeData).length > 3)
 	{
 		var leaves = _.filter(treeData, function(node) {
 			return node.children == undefined || node.children.length == 0;
 		});
+		
+		leaves = _.sortBy(leaves, function(node) {
+		return node.uniqueId;
+		});
+		
 		var lowestLeaf = leaves[0];
+		lowestLeaf.uniqueId = arrayTreeData[lowestLeaf.parent].uniqueId;
 		pruferSequence += treeData[lowestLeaf.parent].uniqueId + " ";
 		
 		if (treeData[lowestLeaf.parent].children[0] == lowestLeaf.name)
@@ -135,19 +145,20 @@ function generatePruferSequence(treeData, rootName)
 		delete treeData[lowestLeaf.name];
 	}
 	
-	var text = rootName +"\r\n" + pruferSequence + "\r\n" + charSequence;
+	var text = arrayTreeData[rootName].uniqueId +"\r\n" + pruferSequence + "\r\n" + charSequence;
 	downloadFile(text);
 }
 
 function readPruferSequence(text)
 {
 	splittedText = text.split("\n");
+	var root = splittedText[0];
 	var pruferSequence = splittedText[1].split(" ");
 	if (pruferSequence[pruferSequence.length - 1] == " " || pruferSequence[pruferSequence.length - 1] == "\r")
 	{
 		pruferSequence.splice(pruferSequence.length - 1, 1);
 	}
-	evaluatePruferSequence(pruferSequence);
+	evaluatePruferSequence(pruferSequence, root);
 }
 
 function evaluatePruferSequence(pruferSequence)
@@ -195,10 +206,12 @@ function evaluatePruferSequence(pruferSequence)
 			node1.children = [];
 			if (numberAlreadyInTree)
 				{
-					node1.parent = firstInNumbers;
+					//node1.parent = firstInNumbers;
+					node1.children.push(parseInt(firstInNumbers));
 				}
 			else
 				{
+					//node1.parent = firstInNumbers;
 					node1.children.push(parseInt(firstInNumbers));
 				}
 			pruferTreeData.push(node1);
@@ -206,7 +219,7 @@ function evaluatePruferSequence(pruferSequence)
 
 		if (numberAlreadyInTree)
 		{
-			numberAlreadyInTree.children.push(parseInt(firstInSequence));
+			numberAlreadyInTree.parent = firstInSequence;
 		}
 		else {
 			node2.name = firstInNumbers;
