@@ -52,7 +52,7 @@ function update(source, tree, svg, diagonal) {
 		  return d.children || d._children ? -18 : 18; })
 	  .attr("dy", ".35em")
 	  .attr("text-anchor", "middle")
-	  .text(function(d) { return d.name + (d.value != undefined ? " | " + d.value : "") + " | " + d.uniqueId; })
+	  .text(function(d) { return d.name + (d.value != undefined ? " | " + d.value : "") + (d.uniqueId != undefined ? " | " + d.uniqueId : ""); })
 	  .style("fill-opacity", 1);
 
   // Declare the links…

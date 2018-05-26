@@ -154,7 +154,7 @@ function readPruferSequence(text)
 	splittedText = text.split("\n");
 	var root = splittedText[0];
 	var pruferSequence = splittedText[1].split(" ");
-	if (pruferSequence[pruferSequence.length - 1] == " " || pruferSequence[pruferSequence.length - 1] == "\r")
+	if (pruferSequence[pruferSequence.length - 1] == " " || pruferSequence[pruferSequence.length - 1] == "\r" || pruferSequence[pruferSequence.length - 1] == "")
 	{
 		pruferSequence.splice(pruferSequence.length - 1, 1);
 	}
@@ -206,8 +206,12 @@ function evaluatePruferSequence(pruferSequence)
 			node1.children = [];
 			if (numberAlreadyInTree)
 				{
-					//node1.parent = firstInNumbers;
-					node1.children.push(parseInt(firstInNumbers));
+					if (numberAlreadyInTree.name > firstInSequence) {
+						node1.children.push(parseInt(firstInNumbers));
+					} else {
+						numberAlreadyInTree.children.push(parseInt(firstInSequence));
+						node1.parent = numberAlreadyInTree.name;
+					}
 				}
 			else
 				{
@@ -219,7 +223,8 @@ function evaluatePruferSequence(pruferSequence)
 
 		if (numberAlreadyInTree)
 		{
-			numberAlreadyInTree.parent = firstInSequence;
+			if (numberAlreadyInTree.name > firstInSequence)
+				numberAlreadyInTree.parent = firstInSequence;
 		}
 		else {
 			node2.name = firstInNumbers;
@@ -246,12 +251,12 @@ function evaluatePruferSequence(pruferSequence)
 				penultimateInTree.children.push(parseInt(keys[1]));
 				var newNode = {};
 				newNode.name = keys[1];
-				newNode.parent = penultimate.name;
+				newNode.parent = penultimateInTree.name;
 				newNode.children = [];
 				pruferTreeData.push(newNode);
 			}
 		else if (lastAlreadyInTree){
-			lastAlreadyInTree.children.push(parseInt(keys[0]));
+			lastAlreadyInTree.parent = parseInt(keys[0]);
 		}
 	generatePruferJsonData(pruferTreeData);	
 }
@@ -259,7 +264,9 @@ function evaluatePruferSequence(pruferSequence)
 function generatePruferJsonData(data)
 {
 	var pruferJsonTreeData = [];
-	pruferJsonTreeData[0] = data[0];
+	pruferJsonTreeData[0] = _.find(data, function(node) {
+		return node.parent == "null";
+	});
 	pruferJsonTreeData[0].children.forEach(findAndReplaceChild.bind(3, data));
 	
 	var pruferTreeDepth = countTreeDepth(pruferJsonTreeData[0]);
