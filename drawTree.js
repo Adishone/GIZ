@@ -1,11 +1,11 @@
 // ************** Generate the tree diagram	 *****************
 function drawTree(treeData, treeDepth, divId) {
-var margin = {top: 40, right: 120, bottom: 20, left: 120},
-	width = 960;
+var margin = {top: 40, right: 40, bottom: 20, left: 40},
+	width = 1200;
 	height = 100*treeDepth;
 
 var tree = d3.layout.tree()
-	.size([960, 100*treeDepth]);
+	.size([1200, 100*treeDepth]);
 
 var diagonal = d3.svg.diagonal()
 	.projection(function(d) { return [d.x, d.y]; });
@@ -52,7 +52,7 @@ function update(source, tree, svg, diagonal) {
 		  return d.children || d._children ? -18 : 18; })
 	  .attr("dy", ".35em")
 	  .attr("text-anchor", "middle")
-	  .text(function(d) { return d.name + (d.value != undefined ? " | " + d.value : "") + (d.uniqueId != undefined ? " | " + d.uniqueId : ""); })
+	  .text(function(d) { return d.name + (d.value != undefined ? "|" + d.value : "") + (d.uniqueId != undefined ? "|" + d.uniqueId : ""); })
 	  .style("fill-opacity", 1);
 
   // Declare the links…

@@ -145,6 +145,7 @@ function generatePruferSequence(treeData, rootName, arrayTreeData)
 	
 	var text = arrayTreeData[rootName].uniqueId +"\r\n" + pruferSequence + "\r\n" + charSequence;
 	downloadFile(text);
+	uniqueId = 1;
 }
 
 function readPruferSequence(text)
