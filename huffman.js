@@ -3,9 +3,7 @@ function generateCharOccurencesMap(text)
 {
 	var charMap = {};
 	text.split('').map(function(character) {
-		if (character !== ' ') {
 		charMap[character] = (charMap[character] || 0) + 1;
-		}
 	});
 	var sortable = [];
 	for (var character in charMap) {
@@ -152,7 +150,7 @@ function generatePruferSequence(treeData, rootName, arrayTreeData)
 function readPruferSequence(text)
 {
 	splittedText = text.split("\n");
-	var root = splittedText[0];
+	var root = splittedText[0].slice(0,1);
 	var pruferSequence = splittedText[1].split(" ");
 	if (pruferSequence[pruferSequence.length - 1] == " " || pruferSequence[pruferSequence.length - 1] == "\r" || pruferSequence[pruferSequence.length - 1] == "")
 	{
@@ -161,7 +159,7 @@ function readPruferSequence(text)
 	evaluatePruferSequence(pruferSequence, root);
 }
 
-function evaluatePruferSequence(pruferSequence)
+function evaluatePruferSequence(pruferSequence, root)
 {
 	//create a list of numbers from 1 to length+3
 	var numberList = {};
@@ -223,7 +221,7 @@ function evaluatePruferSequence(pruferSequence)
 
 		if (numberAlreadyInTree)
 		{
-			if (numberAlreadyInTree.name > firstInSequence)
+			if (numberAlreadyInTree.name != root)
 				numberAlreadyInTree.parent = firstInSequence;
 		}
 		else {
